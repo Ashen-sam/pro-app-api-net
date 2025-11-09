@@ -12,11 +12,13 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="8.0.1" />
+      <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.*" />
   </ItemGroup>
 
  <ItemGroup>
   <ProjectReference Include="..\ProApi.Application\ProApi.Application.csproj" />
   <ProjectReference Include="..\ProApi.Infrastructure\ProApi.Infrastructure.csproj" />
+  <ProjectReference Include="..\ProApi.Domain\ProApi.Domain.csproj" />
 </ItemGroup>
 
 
