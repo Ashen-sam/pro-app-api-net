@@ -1,5 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using ProApi.Infrastructure.Data;
+using ProApi.Application.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using ProApi.Application.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,11 +12,36 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers(); // If you’re using controllers
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services
+    .AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)
+            )
+        };
+    });
+
 
 // ✅ Configure Supabase PostgreSQL Connection
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("SupabaseConnection"))
 );
+
+// Services
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddAuthorization();
 
 // ✅ Enable CORS (allow all for development)
 builder.Services.AddCors(options =>
